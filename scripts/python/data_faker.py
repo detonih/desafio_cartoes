@@ -8,7 +8,7 @@ MYSQL_CONN_STRING = os.getenv('MYSQL_CONN_STRING')
 MYSQL_DATABASE = os.getenv('MYSQL_DATABASE')
 connection_string = MYSQL_CONN_STRING + "/" + MYSQL_DATABASE
 engine = create_engine(
-    connection_string
+    connection_string,
 )
 dbConnection = engine.connect()
 fake = Faker()
@@ -23,22 +23,28 @@ def fake_associado():
         fake_associado["email"].append( fake.email() )
 
     df_fake_associado = pd.DataFrame(fake_associado)
-    df_fake_associado.to_sql("associado", con=engine, index=False, if_exists='replace', chunksize=1000)
+    df_fake_associado.to_sql("associado", con=engine, index=False, if_exists='append', chunksize=1000)
+    engine.dispose()
+    
 
 def fake_conta():
     fake_conta = defaultdict(list)
     account_type_fakes = ['conta_corrente', 'conta_poupaca', 'conta_salario']
+    dbConnection = engine.connect()
     for _ in range_data:
         fake_conta["tipo"].append( fake.words(1, account_type_fakes, True) )
-        fake_conta["data_criacao"].append( fake.date_this_century() )
+        fake_conta["data_criacao"].append( fake.date_time_this_century() )
 
     df_fake = pd.DataFrame(fake_conta)
     get_pk = pd.read_sql("select id as id_associado from mov_cartoes.associado", dbConnection)
     df_fake_conta = df_fake.join(get_pk, lsuffix='_df_fake', rsuffix='_get_pk')
-    df_fake_conta.to_sql("conta", con=engine, index=False, if_exists='replace', chunksize=1000)
+    df_fake_conta.to_sql("conta", con=engine, index=False, if_exists='append', chunksize=1000)
+    engine.dispose()
+
 
 def fake_cartao():
     fake_cartao = defaultdict(list)
+    dbConnection = engine.connect()
     for _ in range_data:
         fake_cartao["num_cartao"].append( fake.credit_card_number() )
 
@@ -51,9 +57,25 @@ def fake_cartao():
     where associado.id = conta.id
     """, dbConnection)
     df_fake_cartao = df_fake.join(get_pk, lsuffix='_df_fake', rsuffix='_get_pk')
-    print(df_fake_cartao[df_fake_cartao['num_cartao'].isnull()])
-    df_fake_cartao.to_sql("cartao", con=engine, index=False, if_exists='replace', chunksize=1000)
+    df_fake_cartao.to_sql("cartao", con=engine, index=False, if_exists='append', chunksize=1000)
+    engine.dispose()
+
+def fake_movimento():
+    fake_movimento = defaultdict(list)
+    dbConnection = engine.connect()
+    type_fakes = ['supermercado', 'eletronicos', 'automotivo', 'construcao', 'viagem']
+    for _ in range_data:
+        fake_movimento["vlr_transacao"].append( fake.pydecimal(10, 2, positive=True, min_value=1, max_value=10000) )
+        fake_movimento["des_transacao"].append( fake.words(1, type_fakes, True) )
+        fake_movimento["data_movimento"].append( fake.date_time_this_century() )
+    
+    df_fake = pd.DataFrame(fake_movimento)
+    get_pk = pd.read_sql("select id as id_cartao from mov_cartoes.cartao", dbConnection)
+    df_fake_movimento = df_fake.join(get_pk, lsuffix='_df_fake', rsuffix='_get_pk')
+    df_fake_movimento.to_sql("movimento", con=engine, index=False, if_exists='append', chunksize=1000)
+    engine.dispose()
 
 fake_associado()
 fake_conta()
 fake_cartao()
+fake_movimento()
