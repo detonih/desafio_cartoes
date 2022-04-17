@@ -19,7 +19,7 @@ def fake_associado():
     for _ in range_data:
         fake_associado["nome"].append( fake.first_name() )
         fake_associado["sobrenome"].append( fake.last_name() )
-        fake_associado["dt_nasc"].append( fake.date_of_birth() )
+        fake_associado["dt_nasc"].append( fake.date_of_birth(minimum_age=18, maximum_age=100) )
         fake_associado["email"].append( fake.email() )
 
     df_fake_associado = pd.DataFrame(fake_associado)
@@ -47,6 +47,7 @@ def fake_cartao():
     dbConnection = engine.connect()
     for _ in range_data:
         fake_cartao["num_cartao"].append( fake.credit_card_number() )
+        fake_cartao["data_criacao"].append( fake.date_time_this_century() )
 
     df_fake = pd.DataFrame(fake_cartao)
     get_pk = pd.read_sql("""
