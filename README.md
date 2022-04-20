@@ -32,8 +32,8 @@ make bash
 
 ## Criar um usuario e senha para acesso ao AirFlow
 #### Utilize o usuário "admin", pois um 'connection id' foi criado especificamente para ele
+#### Acesse a linha de comando do serviço principal
 ```
-make bash
 airflow users create \
     --username admin \
     --firstname Peter \
