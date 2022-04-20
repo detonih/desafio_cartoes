@@ -14,4 +14,6 @@ $HADOOP_HOME/sbin/mr-jobhistory-daemon.sh start historyserver
 hdfs dfs -mkdir /mov_cartoes_flat
 hdfs dfs -chmod g+w /mov_cartoes_flat
 
+/bin/bash /scripts/sh/start_airflow.sh
+
 tail -f /dev/null

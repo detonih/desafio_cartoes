@@ -76,6 +76,9 @@ RUN pip install sqlalchemy
 RUN pip install pymysql
 RUN pip install Faker
 RUN pip install cryptography
+ADD constraint.txt /constraint.txt
+RUN pip install apache-airflow==2.1.4 --constraint ./constraint.txt
+RUN pip install apache-airflow-providers-apache-spark
 
 ENV PATH $PATH:$HADOOP_HOME/bin:$SPARK_HOME/bin
 ENV HADOOP_CLASSPATH=$HADOOP_CLASSPATH
@@ -92,6 +95,7 @@ RUN rm -f /tmp/env.sh
 
 RUN mkdir /scripts
 RUN mkdir /mov_cartoes_flat
+RUN mkdir -p /root/airflow/dags
 
 ADD start.sh /start.sh
 RUN chmod a+x /start.sh
