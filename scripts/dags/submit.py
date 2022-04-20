@@ -10,7 +10,7 @@ with DAG(
     dag_id='submit_agg_mov_cartoes',
     default_args=args,
     schedule_interval=None,
-    start_date=datetime(2022, 4, 21),
+    start_date=datetime(2022, 4, 20),
     catchup=False,
     tags=['cartoes'],
 ) as dag:

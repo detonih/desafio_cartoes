@@ -14,6 +14,16 @@ $HADOOP_HOME/sbin/mr-jobhistory-daemon.sh start historyserver
 hdfs dfs -mkdir /mov_cartoes_flat
 hdfs dfs -chmod g+w /mov_cartoes_flat
 
-/bin/bash /scripts/sh/start_airflow.sh
+nohup start_db_airflow.sh > /logs/start_db_airflow.log &
+sleep 20
+
+nohup start_webserver_airflow.sh > /logs/start_webserver_airflow.log &
+sleep 20
+
+nohup create_conn_id_airflow.sh > /logs/create_conn_id_airflow.log &
+sleep 20
+
+nohup start_scheduler_airflow.sh > /logs/start_scheduler_airflow.log &
+sleep 20
 
 tail -f /dev/null

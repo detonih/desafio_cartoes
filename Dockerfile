@@ -97,6 +97,11 @@ RUN mkdir /scripts
 RUN mkdir /mov_cartoes_flat
 RUN mkdir -p /root/airflow/dags
 
+COPY config/create_conn_id_airflow.sh config/start_db_airflow.sh config/start_scheduler_airflow.sh /config/start_webserver_airflow.sh /tmp/
+RUN chmod a+x /tmp/*.sh \
+    && mv /tmp/create_conn_id_airflow.sh /tmp/start_db_airflow.sh /tmp/start_scheduler_airflow.sh /tmp/start_webserver_airflow.sh /usr/bin
+RUN mkdir /logs
+
 ADD start.sh /start.sh
 RUN chmod a+x /start.sh
 
